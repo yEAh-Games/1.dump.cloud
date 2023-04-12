@@ -1,0 +1,26 @@
+const gitlabUrl = 'https://gitlab.com/api/v4';
+const projectId = '45086875';
+const privateToken = 'glpat-tDxmj78rWuGZsdxd_7Xh';
+
+const fetchFiles = async (path = '') => {
+  const apiUrl = `${gitlabUrl}/projects/${projectId}/repository/tree`;
+  const response = await fetch(`${apiUrl}?private_token=${privateToken}&recursive=true&per_page=100&path=${path}`);
+  const files = await response.json();
+
+  const fileList = [];
+
+  for (const file of files) {
+    if (file.type === 'blob') {
+      fileList.push(file.path);
+    } else if (file.type === 'tree') {
+      const subFiles = await fetchFiles(file.path);
+      fileList.push(...subFiles);
+    }
+  }
+
+  return fileList;
+};
+
+fetchFiles().then((files) => {
+  console.log(files);
+});
