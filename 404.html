@@ -1,26 +1,45 @@
-const gitlabUrl = 'https://gitlab.com/api/v4';
-const projectId = '45086875';
-const privateToken = 'glpat-tDxmj78rWuGZsdxd_7Xh';
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>GitLab Files List</title>
+  </head>
+  <body>
+    <h1>GitLab Files List</h1>
+    <ul id="files-list"></ul>
+    <script>
+      const gitlabUrl = 'https://gitlab.com/api/v4';
+      const projectId = '45086875';
+      const privateToken = 'glpat-tDxmj78rWuGZsdxd_7Xh';
 
-const fetchFiles = async (path = '') => {
-  const apiUrl = `${gitlabUrl}/projects/${projectId}/repository/tree`;
-  const response = await fetch(`${apiUrl}?private_token=${privateToken}&recursive=true&per_page=100&path=${path}`);
-  const files = await response.json();
+      const fetchFiles = async (path = '') => {
+        const apiUrl = `${gitlabUrl}/projects/${projectId}/repository/tree`;
+        const response = await fetch(`${apiUrl}?private_token=${privateToken}&recursive=true&per_page=100&path=${path}`);
+        const files = await response.json();
 
-  const fileList = [];
+        const fileList = [];
 
-  for (const file of files) {
-    if (file.type === 'blob') {
-      fileList.push(file.path);
-    } else if (file.type === 'tree') {
-      const subFiles = await fetchFiles(file.path);
-      fileList.push(...subFiles);
-    }
-  }
+        for (const file of files) {
+          if (file.type === 'blob') {
+            fileList.push(file.path);
+          } else if (file.type === 'tree') {
+            const subFiles = await fetchFiles(file.path);
+            fileList.push(...subFiles);
+          }
+        }
 
-  return fileList;
-};
+        return fileList;
+      };
 
-fetchFiles().then((files) => {
-  console.log(files);
-});
+      fetchFiles().then((files) => {
+        const filesList = document.getElementById('files-list');
+        for (const file of files) {
+          const li = document.createElement('li');
+          const text = document.createTextNode(file);
+          li.appendChild(text);
+          filesList.appendChild(li);
+        }
+      });
+    </script>
+  </body>
+</html>
