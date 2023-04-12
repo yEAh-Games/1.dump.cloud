@@ -2,10 +2,10 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>GitLab Files List</title>
+    <title>Index of /</title>
   </head>
   <body>
-    <h1>GitLab Files List</h1>
+    <h1>Index of /</h1>
     <ul id="files-list"></ul>
     <script>
       const gitlabUrl = 'https://gitlab.com/api/v4';
@@ -35,8 +35,11 @@
         const filesList = document.getElementById('files-list');
         for (const file of files) {
           const li = document.createElement('li');
+          const a = document.createElement('a');
           const text = document.createTextNode(file);
-          li.appendChild(text);
+          a.href = `https://gitlab.com/${projectId}/-/blob/master/${file}`;
+          a.appendChild(text);
+          li.appendChild(a);
           filesList.appendChild(li);
         }
       });
